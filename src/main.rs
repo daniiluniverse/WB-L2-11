@@ -1,10 +1,26 @@
-/*
-Срез b создается из массива a. Он включает элементы с индексами от 1 до 3 (включительно), т.е. элементы 77, 78 и 79,
-верхняя граница диапазона не включается в срез.
-*/
-fn main() {
-    let a = [76, 77, 78, 79, 80];
-    let b = &a[1..4];
-    println!("{b:?}"); //Эта строка выводит содержимое среза b в формате, удобном для отладки.
-                       // Оператор :? используется для отображения структуры данных.
+use std::net::SocketAddr;
+use axum::{routing::{post, Router}, ServiceExt};
+use std::sync::Arc;
+use tokio::sync::Mutex;
+use log::LevelFilter;
+use env_logger;
+use tokio::net::windows::named_pipe::PipeEnd::Server;
+
+mod models;
+mod handlers;
+mod middleware;
+mod utils;
+
+#[tokio::main]
+async fn main() {
+    let app = Router::new(); // Ваш маршрутизатор
+
+    // Укажите адрес и порт
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+
+    // Запуск сервера
+    Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }
